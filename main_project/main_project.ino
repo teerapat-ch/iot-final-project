@@ -9,17 +9,27 @@
 HX711 scale;
 Servo myservo;
 
-ฺbool activated = true; // เปิดการให้อาหารอัติโนมัติไหม (เดี๋ยวคุยอีกทีว่าจะมีมั้ย)
+bool activated = true; // เปิดการให้อาหารอัติโนมัติไหม (เดี๋ยวคุยอีกทีว่าจะมีมั้ย)
 
 unsigned long interval = 1000; // วัดน้ำหนักทุกๆ X วินาที
 unsigned long lastSec = 0; // ไว้เช็คเวลาแทน delay()
 
+
+void checkWeight() {
+    float w = scale.get_units(10);
+    Serial.print("Weight: ");
+    Serial.println(w);
+
+    if (currentWeight < 5.0) { // เหลือแค่น้ำหนักถาด
+      fillFood();
+    }
+}
+
 void fillFood() {
-  tone(buzzPin, 1000);
+  tone(buzzPin, 1000, 1000);
 
-  // Motor code
+  // Servo code
   // ...
-
   delay(1000);
 }
 
@@ -39,14 +49,8 @@ void setup() {
 
 void loop() {
   unsigned long currSec = millis();
-  if (currSec - lastSec >= 1000) {
+  if (currSec - lastSec >= interval) {
     lastSec = currSec;
-    float w = scale.get_units(10);
-    Serial.print("Weight: ");
-    Serial.println(w);
-
-    if (currentWeight < 5.0) {
-      fillFood();
-    }
+    checkWeight();
   }
 }
