@@ -4,17 +4,26 @@
 
 #include <BlynkSimpleEsp32.h>
 
+BlynkTimer timer;
+
 char ssid[] = "darkblue";
 char pass[] = "bluedark";
+
+void myTimer() {
+  Blynk.virtualWrite(V0, 100);
+}
 
 void setup()
 {
   Serial.begin(115200);
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  timer.setInterval(600000L, myTimer);
 }
 
 void loop()
 {
   Blynk.run();
+  timer.run();
 }
 
