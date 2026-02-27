@@ -1,6 +1,21 @@
 #include "HX711.h"
 #include <Servo.h>
 
+// ---------- Blynk setup ----------
+
+#define BLYNK_TEMPLATE_ID "TMPL6Tg7kQjXZ"
+#define BLYNK_TEMPLATE_NAME "IoT Final Project"
+#define BLYNK_AUTH_TOKEN "YMZqGQiciOKl5zzoBaPVM4EprpYGrlkd"
+
+#include <BlynkSimpleEsp32.h>
+
+BlynkTimer timer;
+
+char ssid[] = "darkblue";
+char pass[] = "bluedark";
+
+// ---------- Sensors setup ----------
+
 #define LoadDT  21   // ขา DT ต่อกับ GPIO 21
 #define LoadSCK 22   // ขา SCK ต่อกับ GPIO 22
 #define servoPin 10 // Motor
@@ -10,10 +25,6 @@ HX711 scale;
 Servo myservo;
 
 bool activated = true; // เปิดการให้อาหารอัติโนมัติไหม (เดี๋ยวคุยอีกทีว่าจะมีมั้ย)
-
-unsigned long interval = 1000; // วัดน้ำหนักทุกๆ X วินาที
-unsigned long lastSec = 0; // ไว้เช็คเวลาแทน delay()
-
 
 void checkWeight() {
     float w = scale.get_units(10);
@@ -45,12 +56,13 @@ void setup() {
 
   // Servo setup
   myservo.attach(servoPin);
+
+  // Blynk setup
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  timer.setInterval(600000L, checkWeight); // checkWeight() ทุกๆ 10 นาที
 }
 
 void loop() {
-  unsigned long currSec = millis();
-  if (currSec - lastSec >= interval) {
-    lastSec = currSec;
-    checkWeight();
-  }
+  Blynk.run();
+  timer.run();
 }
