@@ -1,5 +1,5 @@
 #include "HX711.h"
-#include <Servo.h>
+#include <ESP32Servo.h>
 
 // ---------- Blynk setup ----------
 
@@ -19,29 +19,38 @@ char pass[] = "bluedark";
 #define LoadDT  21   // ขา DT ต่อกับ GPIO 21
 #define LoadSCK 22   // ขา SCK ต่อกับ GPIO 22
 #define servoPin 10 // Motor
-#define buzzPin 2  // Buzzer
 
 HX711 scale;
 Servo myservo;
 
+// ---------- Variables ----------
+
 bool activated = true; // เปิดการให้อาหารอัติโนมัติไหม (เดี๋ยวคุยอีกทีว่าจะมีมั้ย)
+bool isFeeding = false;
+
+// -------------------------------
 
 void checkWeight() {
-    float w = scale.get_units(10);
-    Serial.print("Weight: ");
-    Serial.println(w);
+  float w = scale.get_units(10);
+  Serial.print("Weight: ");
+  Serial.println(w);
 
-    if (currentWeight < 5.0) { // เหลือแค่น้ำหนักถาด
-      fillFood();
-    }
+  if (w < 5.0 && activated && !isFeeding) { // เหลือแค่น้ำหนักถาด
+    fillFood();
+  }
+
+  Blynk.virtualWrite(V0, w); // ส่งข้อมูล Weight ขึ้น Blynk
 }
 
 void fillFood() {
-  tone(buzzPin, 1000, 1000);
+  isFeeding = true;
+  myservo.write(90);
+  timer.setTimeout(3000L, stopFilling);
+}
 
-  // Servo code
-  // ...
-  delay(1000);
+void stopFilling() {
+  isFeeding = false;
+  myservo.write(0);
 }
 
 void setup() {
@@ -59,7 +68,7 @@ void setup() {
 
   // Blynk setup
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
-  timer.setInterval(600000L, checkWeight); // checkWeight() ทุกๆ 10 นาที
+  timer.setInterval(5000L, checkWeight); // checkWeight() ทุกๆ 5 วินาที
 }
 
 void loop() {
