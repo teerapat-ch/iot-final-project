@@ -1,18 +1,19 @@
 #include "HX711.h"
 #include <ESP32Servo.h>
+#include "secret.h"
 
 // ---------- Blynk setup ----------
 
 #define BLYNK_TEMPLATE_ID "TMPL6Tg7kQjXZ"
 #define BLYNK_TEMPLATE_NAME "IoT Final Project"
-#define BLYNK_AUTH_TOKEN "YMZqGQiciOKl5zzoBaPVM4EprpYGrlkd"
+#define BLYNK_AUTH_TOKEN SECRET_AUTH
 
 #include <BlynkSimpleEsp32.h>
 
 BlynkTimer timer;
 
-char ssid[] = "darkblue";
-char pass[] = "bluedark";
+char ssid[] = SECRET_SSID;
+char pass[] = SECRET_PASS;
 
 // ---------- Sensors setup ----------
 
