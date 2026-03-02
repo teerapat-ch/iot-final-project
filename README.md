@@ -1,4 +1,4 @@
-# Automatic Pet Feeder
+# Smart Pet Feeder
 ## Features
 - Check the weight of food inside the bowl once in a while with load cell
 - If the bowl is empty, the servo motor will rotate and bring out the food
