@@ -19,7 +19,7 @@ char pass[] = SECRET_PASS;
 
 #define LoadDT 5
 #define LoadSCK 4
-#define servoPin 12
+#define servoPin 13
 
 HX711 scale;
 Servo myservo;
