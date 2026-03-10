@@ -53,16 +53,23 @@ BLYNK_WRITE(V2) {
 }
 
 void checkWeight() {
-  float w = scale.get_units(10);
-  Serial.print("Weight: ");
+  // อ่านค่าน้ำหนักแล้วลบออก 33
+  float rawWeight = scale.get_units(10);
+  float w = rawWeight - 33.0; 
+
+  // ป้องกันค่าน้ำหนักติดลบ (กรณีถาดเบากว่า 33g เล็กน้อย)
+  if (w < 0) w = 0; 
+
+  Serial.print("Weight (Net): ");
   Serial.println(w);
 
-  if (w < 5.0 && activated && !isFeeding) { // เหลือแค่น้ำหนักถาด
+  // เงื่อนไข: ถ้าเหลือน้อยกว่า 25 กรัม (หลังจากหักถาดแล้ว) ให้เติมอาหาร
+  if (w < 25.0 && activated && !isFeeding) { 
     fillFood();
     Serial.println("feed automatically");
   }
 
-  Blynk.virtualWrite(V0, w); // ส่งข้อมูล Weight ขึ้น Blynk
+  Blynk.virtualWrite(V0, w); 
 }
 
 void fillFood() {
@@ -84,7 +91,7 @@ void setup() {
   // Load cell setup
   scale.begin(LoadDT, LoadSCK);
   Serial.println("Initializing the scale...");
-  scale.set_scale();     // ตั้งค่าเริ่มต้น
+  scale.set_scale(1239.53f);     // ตั้งค่าเริ่มต้น
   scale.tare();          // รีเซ็ตค่าน้ำหนักเป็น 0
   Serial.println("Scale ready");
 
